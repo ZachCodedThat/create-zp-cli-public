@@ -4,6 +4,8 @@ It was a fun way to learn deeper concepts around [Node](https://nodejs.org/en/).
 
 Currently this is just a barebones CLI that gives you the choice of 4 templates
 
+## Eventually
+
 I want to build this out to provide theme tool choices like [Chakra-UI](https://chakra-ui.com/) and [Tailwind](https://tailwindcss.com/) but as of right now the templates come with barebones CSS styling.
 
 ---
@@ -16,25 +18,21 @@ I want to build this out to provide theme tool choices like [Chakra-UI](https://
 
 ## Usage
 
-Run `npx create-zp-cli` inside of a fresh directory
+Run `npx create-zp-cli` to start your good time.
 
-**Note:** If no flags are passed you will be prompted for a template choice and wether you want to initilize git within the project.
+**Note:** If no flags are passed you will be prompted for a template choice and wether you want to install the deeps within the project along with the name of your project.
 
+![Project Name cli question](public/projectName.png)
 ![Template cli question](public/template.png)
+![Install deeps cli question](public/deepsInstall.png)
 
-![Git init cli question](public/git_init.png)
-
-Once completed change the name of the project inside of the package.json and you are off to the races!
+Once completed let the magic happen and you are off to the races!
 
 ---
 
 ### Flags
 
 `--yes , -y` Skips all prompts and passes default vlaues for all options, **defaults** to `false`
-
----
-
-`--git , -g` initializes git within the new directory, **defaults** to `false`
 
 ---
 
