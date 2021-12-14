@@ -22,10 +22,8 @@ import { createProject } from "./main";
 function parseArgumentsIntoOptions(rawArgs) {
   const args = arg(
     {
-      "--git": Boolean,
       "--yes": Boolean,
       "--install": Boolean,
-      "-g": "--git",
       "-y": "--yes",
       "-i": "--install",
     },
@@ -35,7 +33,6 @@ function parseArgumentsIntoOptions(rawArgs) {
   );
   return {
     skipPrompts: args["--yes"] || false,
-    git: args["--git"] || false,
     template: args._[0],
     install: args["--install"] || false,
   };
@@ -55,14 +52,26 @@ function parseArgumentsIntoOptions(rawArgs) {
 
 async function promptForMssingOptions(options) {
   const defaultTemplate = "NextJS";
+  const defaultProjectName = "my-super-cool-project";
+
   if (options.skipPrompts) {
     return {
       ...options,
       template: options.template || defaultTemplate,
+      projectName: options.projectName || defaultProjectName,
     };
   }
 
   const questions = [];
+
+  questions.push({
+    type: "input",
+    required: true,
+    name: "projectName",
+    message: "What do you want to name this world changing project?",
+    default: defaultProjectName,
+  });
+
   if (!options.template) {
     questions.push({
       type: "list",
@@ -72,11 +81,12 @@ async function promptForMssingOptions(options) {
       default: defaultTemplate,
     });
   }
-  if (!options.git) {
+
+  if (!options.install) {
     questions.push({
       type: "confirm",
-      name: "git",
-      message: "Initialize a git repository?",
+      name: "install",
+      message: "Install dependencies?",
       default: false,
     });
   }
@@ -84,8 +94,9 @@ async function promptForMssingOptions(options) {
   const answers = await inquirer.prompt(questions);
   return {
     ...options,
+    projectName: options.projectName || answers.projectName,
     template: options.template || answers.template,
-    git: options.git || answers.git,
+    install: options.install || answers.install,
   };
 }
 
@@ -102,5 +113,4 @@ export async function cli(args) {
   let options = parseArgumentsIntoOptions(args);
   options = await promptForMssingOptions(options);
   await createProject(options);
-  console.log(options);
 }

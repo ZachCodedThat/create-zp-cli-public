@@ -1,78 +1,52 @@
 import chalk from "chalk";
 import fs from "fs";
-import ncp from "ncp";
-import path from "path";
-import execa from "execa";
 import Listr from "listr";
 import { projectInstall } from "pkg-install";
-import { promisify } from "util";
-
-const access = promisify(fs.access);
-const copy = promisify(ncp);
-
-async function copyTemplateFiles(options) {
-  return copy(options.templateDirectory, options.targetDirectory, {
-    clobber: false,
-  });
-}
-
-async function initGit(options) {
-  const result = await execa("git", ["init"], {
-    cwd: options.targetDirectory,
-  });
-  if (result.failed) {
-    return Promise.reject(new Error("Failed to initialize git"));
-  }
-  return;
-}
+import degit from "degit";
 
 export async function createProject(options) {
   options = {
     ...options,
-    targetDirectory: options.targetDirectory || process.cwd(),
   };
+  // console.log(options);
 
-  const currentFileUrl = import.meta.url;
-  const templateDir = path.resolve(
-    new URL(currentFileUrl).pathname.substring(
-      new URL(currentFileUrl).pathname.indexOf("/") + 1
-    ),
-    "../../templates",
-    options.template.toLowerCase()
-  );
-  options.templateDirectory = templateDir;
+  const emitter = degit(`ZachCodedThat/zp-${options.template}-template`, {
+    cache: false,
+    force: true,
+    verbose: true,
+  });
 
-  try {
-    await access(templateDir, fs.constants.R_OK);
-  } catch (err) {
-    console.error("%s Invalid template name", chalk.red.bold("ERROR"));
-    process.exit(1);
-  }
+  emitter.clone(`${options.projectName}`).then(() => {
+    const pkg = JSON.parse(
+      fs.readFileSync(`${options.projectName}/package.json`, "utf8")
+    );
+    if (pkg && pkg.name) {
+      pkg.name = `${options.projectName}`;
+      fs.writeFileSync(
+        `${options.projectName}/package.json`,
+        JSON.stringify(pkg, null, 2)
+      );
+    }
+  });
 
   const tasks = new Listr([
-    {
-      title: "Copy project files",
-      task: () => copyTemplateFiles(options),
-    },
-    {
-      title: "Initialize git",
-      task: () => initGit(options),
-      enabled: () => options.git,
-    },
     {
       title: "Install dependencies",
       task: () =>
         projectInstall({
-          cwd: options.targetDirectory,
+          cwd: options.projectName,
         }),
-      skip: () =>
-        !options.install
-          ? "Pass --install to automatically install dependencies"
-          : undefined,
+      skip: () => {
+        if (!options.install) {
+          return "Don't forget to install dependencies!!";
+        }
+      },
     },
   ]);
 
-  await tasks.run();
+  await tasks.run().catch((err) => {
+    console.error(chalk.red(err));
+  });
 
   console.log("%s Project ready", chalk.green.bold("DONE"));
   return true;
