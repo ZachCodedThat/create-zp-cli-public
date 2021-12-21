@@ -67,4 +67,4 @@ Template choices: **NextJS** || **NextJS-Typescript** || **React** || **React-Ty
 
 "[listr](https://www.npmjs.com/package/listr)": "^0.14.3", - Handles the tasks that need to be completed according to what options are passed in to the cli via flags and prompts _src.main.js_
 
-## "[pkg-install](https://www.npmjs.com/package/pkg-install)": "^1.0.0" - Handles the installation of the dependencies in the new repo directory. _src/main.js_
+"[pkg-install](https://www.npmjs.com/package/pkg-install)": "^1.0.0" - Handles the installation of the dependencies in the new repo directory. _src/main.js_
