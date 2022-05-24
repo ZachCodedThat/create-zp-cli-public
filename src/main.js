@@ -59,6 +59,7 @@ export async function createProject(options) {
       title: "Install dependencies",
       task: () =>
         projectInstall({
+          prefer: "yarn",
           cwd: options.projectName,
         }),
       skip: () => {
