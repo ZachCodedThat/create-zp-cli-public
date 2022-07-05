@@ -1,6 +1,6 @@
 {
   "name": "create-zp-cli",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "CLI bootstrap for my new projects",
   "main": "src/index.js",
   "bin": {
